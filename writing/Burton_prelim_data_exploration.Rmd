@@ -1,0 +1,15 @@
+---
+title: "Preliminary_data_exploration"
+output: html_document
+---
+
+```{r, message, error=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+```{r,message, error=FALSE, warning=FALSE}
+jep_data <- read_tsv("jeopardy_clue_dataset-master/season1.tsv") %>% 
+  slice(1:5) %>% 
+  print()
+```
+

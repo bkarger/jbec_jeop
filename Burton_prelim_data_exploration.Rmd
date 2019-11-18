@@ -5,11 +5,16 @@ output: html_document
 
 ```{r, message, error=FALSE, warning=FALSE}
 library(tidyverse)
+library(tidyr)
 ```
-
+Pulls out all different types of championships/tournaments/etc. based on regex for game in notes column. 
 ```{r,message, error=FALSE, warning=FALSE}
-jep_data <- read_tsv("jeopardy_clue_dataset-master/season1.tsv") %>% 
-  slice(1:5) %>% 
+jep_data <- read_tsv("data/jeopardy_clue_dataset-master/master_season1-35.tsv") %>% 
+  mutate(tournaments = notes == str_match_all(string = notes, pattern = ".*game.*")) %>%
+  filter(tournaments == TRUE) %>% 
   print()
+```
+```{r}
+
 ```
 

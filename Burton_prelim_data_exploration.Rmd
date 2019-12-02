@@ -7,10 +7,15 @@ output: html_document
 library(tidyverse)
 library(tidyr)
 library(scales)
+library(gridExtra)
 ```
 Pulls out all different types of championships/tournaments/etc. based on regex for game in notes column. 
 ```{r,message, error=FALSE, warning=FALSE, fig.height=7}
-jep_data <- read_tsv("data/jeopardy_clue_dataset-master/master_season1-35.tsv") 
+jep_data <- read_tsv("data/jeopardy_clue_dataset-master/master_season1-35.tsv")
+
+jep_data %>% 
+  filter(round == "3",
+         value > "0")
 
 tournaments <- jep_data %>% 
   mutate(tournaments = notes == str_match_all(string = notes, pattern = ".*game.*")) %>%
@@ -34,13 +39,24 @@ daily_doubles
 What was the highest daily double bet? Was it higher in tournaments?
 ```{r, warning=FALSE, message=FALSE, error=FALSE}
 #need to plot/facet non tournaments
-tournaments %>% 
+x <- tournaments %>% 
   select(-c(comments:question, notes)) %>% 
   filter(daily_double == "yes") %>% 
   arrange(desc(value, air_date)) %>% 
   ggplot(aes(value, air_date)) +
-  geom_point(aes(color = round)) 
+  geom_point(aes(color = round)) +
+  ggtitle("Tournaments") +
+  facet_grid("round")
+y <- jep_data %>% 
+  select(-c(comments:question, notes)) %>% 
+  filter(daily_double == "yes") %>% 
+  arrange(desc(value, air_date)) %>% 
+  ggplot(aes(value, air_date)) +
+  geom_point(aes(color = round)) + 
+  ggtitle("All Games") +
+  facet_grid("round")
 
+grid.arrange(x, y)
 range(tournaments$value)
 ```
 

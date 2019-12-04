@@ -1,0 +1,30 @@
+---
+title: "AP Subject Joining"
+author: "Eric Wendt"
+date: "12/4/2019"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(dplyr)
+library(stringr)
+```
+
+```{r message=FALSE, warning=FALSE}
+jeop_data <- readr::read_tsv(file = "data/jeopardy_clue_dataset-master/master_season1-35.tsv")
+```
+
+```{r}
+ap_subjects <- c("biology", "chemistry", "physics", "history", "liturature")
+
+grouped_categories <- jeop_data %>% 
+  dplyr::arrange(category) %>% 
+  dplyr::mutate(category = stringr::str_to_lower(category)) %>% 
+  dplyr::filter(category %in% ap_subjects)
+```
+
+

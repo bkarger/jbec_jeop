@@ -1,0 +1,146 @@
+When does a limit fail to exist?
+1. The left handed limit does not equal the right handed limit
+2. Unbounded behavior
+3. Oscillating
+lim(x?c)(b)=
+b
+lim(x?c)(x)=
+c
+lim(x?c)(x^n)=
+c^n
+A function is continuous if the following 3 conditions are met:
+1. ƒ(c) is defined
+2. lim(x?c)(ƒ(x)) exists
+3. ƒ(c) = lim(x?c)(ƒ(x))
+"If ƒ(x) approaches ±? as x approaches c from the right or left, then x=c is a ________"
+Vertical Asymptote
+The line y=L is a horizontal asymptote of the graph of ƒ if:
+lim(x? ±?)(ƒ(x))= L
+lim(x? ±?)(ƒ(x))=
+If the degree of the numerator is < the degree of the denominator
+0
+lim(x? ±?)(ƒ(x))=
+If the degree of the numerator is > the degree of the denominator
+Does not exist
+lim(x? ±?)(ƒ(x))=
+If the degree of the numerator is = the degree of the denominator
+The ratio of the leading coefficients
+lim(x?0)[(sinx)/x]=
+1
+lim(x?0)[(1-cosx)/x]=
+0
+Limit definition of a derivative
+ƒ'(x)= lim(?x?0) [f(x+?x)-f(x)]/ (?x)
+d/dx [c]
+0
+d/dx [u?]
+nu??¹u'
+d/dx [sinu]
+(cosu)(u')
+d/dx [cosu]
+(-sinu)(u')
+Average Rate of Change
+[f(b)-f(a)]/(b-a)
+Product Rule: d/dx[f(x)g(x)]=
+d/dx[f(x)g(x)]= f(x)g'(x)+g(x)f'(x)
+Quotient Rule d/dx[f(x)/g(x)]=
+d/dx[f(x)/g(x)]= [g(x)f'(x)-f(x)g'(x)]/[g(x)]²
+Instantaneous Rate of Change at x=c of f(x)
+=f'(c)
+d/dx[tanu]=
+d/dx[tanu]= (sec²u)u'
+d/dx[secu]=
+d/dx[secu]= (secu·tanu)u'
+d/dx[cotu]=
+d/dx[cotu]= -(csc²u)u'
+d/dx[cscu]=
+d/dx[cscu]= -(cscu·cotu)u'
+"If s(t)= Position, then"
+s'(t) =
+s''(t)=
+s'(t)= velocity
+s''(t) = acceleration
+A critical number occurs when:
+f'(x)=0 or is undefined and f(x) is changing from increasing to decreasing or vice versa.
+A point of inflection occurs when:
+f''(x)=0 or is undefined and f(x) is changing from concave upward to concave downward or vice versa.
+?0dx
+C
+?kdx
+kx+C
+?kf(x)dx
+k?f(x)dx
+?[f(x)±g(x)]dx
+?f(x)dx ± ?g(x)dx
+?x?dx
+[x?(n+1)]/(n+1) + C
+?cos(x)dx
+sin(x) + C
+?sin(x)dx
+-cos(x) + C
+?sec²(x)dx
+tan(x) + C
+?sec(x)tan(x)dx
+sec(x) + C
+?csc²(x)dx
+-cot(x) + C
+?csc(x)cot(x)dx
+-csc(x) + C
+When does the derivative of f(x) not exist?
+"f(x) is undefined, where f(x) has a sharp turn, where f(x) has a vertical tangent line"
+d/dx[ln(u)]=
+u'/u
+"Average value of f on an interval (a,b)"
+1/(b-a)?f(x)dx [NOTE: limits of integration are from a to b]
+d/dx[lnu]
+u'/u
+?(1/u)du
+ln|u| + C
+?tan(u)du
+-ln|cos(u)| + C
+?cot(u)du
+ln|sin(u)| + C
+?sec(u)du
+ln|sec(u)+tan(u)| + C
+?csc(u)du
+-ln|csc(u)+cot(u)| + C
+"If f and g are inverse functions, g'(x)="
+1/ƒ'(g(x))
+d/dx[e?u]
+(e^u)u'
+?e^u du
+e^u + C
+d/dx[a^u]
+(lna)(a^u)(u')
+d/dx[loga u]
+u'/[(lna)(u)]
+?a^x dx
+(a^x)/(lna) + C
+d/dx[arccosu]=
+-u'/?(1-u²)
+d/dx[arcsecu]=
+u'/(|u|?(u²-1))
+d/dx[arcsinu]=
+u'/?(1-u²)
+d/dx[arccotu]=
+-u'/(1+u²)
+d/dx[arctanu]=
+u'/(1+u²)
+d/dx[arccscu]=
+-u'/(|u|?(u²-1))
+d/dx[cscu]=
+-(cscucotu)u'
+d/dx[secu]=
+(secutanu)u'
+d/dx[cotu]=
+-(csc²u)u'
+d/dx[|u|]=
+(u×u')/|u|
+?cscucotudu=
+-cscu + C
+?du/?(a²-u²)=
+arcsin(u/a) + C
+?du/(a²+u²)
+(1/a)arctan(u/a) + C
+?du/(u?(u²-a²))
+(1/a)arcsec(|u|/a) + C

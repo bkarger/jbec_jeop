@@ -8,10 +8,12 @@ library(tidyverse)
 library(tidyr)
 library(scales)
 library(gridExtra)
+library(plotly)
+library(DT)
 ```
 Pulls out all different types of championships/tournaments/etc. based on regex for game in notes column. 
 ```{r,message, error=FALSE, warning=FALSE, fig.height=7}
-jep_data <- read_tsv("data/jeopardy_clue_dataset-master/master_season1-35.tsv")
+jep_data <- read_tsv("../data/jeopardy_clue_dataset-master/master_season1-35.tsv")
 
 jep_data %>% 
   filter(round == "3",
@@ -39,7 +41,7 @@ daily_doubles
 What was the highest daily double bet? Was it higher in tournaments?
 ```{r, warning=FALSE, message=FALSE, error=FALSE}
 #need to plot/facet non tournaments
-x <- tournaments %>% 
+tournament_graph <- tournaments %>% 
   select(-c(comments:question, notes)) %>% 
   filter(daily_double == "yes") %>% 
   arrange(desc(value, air_date)) %>% 
@@ -47,16 +49,24 @@ x <- tournaments %>%
   geom_point(aes(color = round)) +
   ggtitle("Tournaments") +
   facet_grid("round")
-y <- jep_data %>% 
+all_rounds <- jep_data %>% 
   select(-c(comments:question, notes)) %>% 
   filter(daily_double == "yes") %>% 
   arrange(desc(value, air_date)) %>% 
   ggplot(aes(value, air_date)) +
   geom_point(aes(color = round)) + 
   ggtitle("All Games") +
-  facet_grid("round")
+  facet_grid("round") 
 
-grid.arrange(x, y)
-range(tournaments$value)
+all_rounds <- ggplotly(all_rounds)
+tournament_graph <- ggplotly(tournament_graph)
+
+subplot(all_rounds, tournament_graph, nrows = 2)
+```
+
+```{r}
+season_1 <- read_tsv("../data/jeopardy_clue_dataset-master/season1.tsv") %>% 
+  filter(round == "1")
+datatable(season_1)
 ```
 

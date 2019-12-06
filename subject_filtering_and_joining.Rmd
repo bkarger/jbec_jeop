@@ -25,6 +25,5 @@ grouped_categories <- jeop_data %>%
   dplyr::arrange(category) %>% 
   dplyr::mutate(category = stringr::str_to_lower(category)) %>% 
   dplyr::filter(category %in% ap_subjects)
-```
-
+``` 
 

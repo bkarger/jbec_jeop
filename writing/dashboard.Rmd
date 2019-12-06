@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "jbec_jeop Dashboard"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -22,11 +22,18 @@ Column {data-width=600}
 ### Chart A
 
 ```{r}
-jep_data <- read_tsv("../data/jeopardy_clue_dataset-master/master_season1-35.tsv")
+season_1 <- read_tsv("../data/jeopardy_clue_dataset-master/season16.tsv") %>% 
+  filter(round == "1")
+datatable(season_1)
+```
 
-jep_data %>% 
-  filter(round == "3",
-         value > "0")
+Column {data-width=600}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+jep_data <- read_tsv("../data/jeopardy_clue_dataset-master/season16.tsv")
 
 tournaments <- jep_data %>% 
   mutate(tournaments = notes == str_match_all(string = notes, pattern = ".*game.*")) %>%
@@ -53,17 +60,6 @@ all_rounds <- ggplotly(all_rounds)
 tournament_graph <- ggplotly(tournament_graph)
 
 subplot(all_rounds, tournament_graph, nrows = 2)
-```
-
-Column {data-width=400}
------------------------------------------------------------------------
-
-### Chart B
-
-```{r}
-season_1 <- read_tsv("../data/jeopardy_clue_dataset-master/season1.tsv") %>% 
-  filter(round == "1")
-datatable(season_1)
 ```
 
 ### Chart C

@@ -1,0 +1,235 @@
+---
+title: "plots_caroline"
+author: "Caroline Wendt"
+date: "12/8/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.path = "../figs/", echo = TRUE,
+                      error = FALSE, message = FALSE, warning = FALSE)
+```
+
+
+# Code for graphs
+**Note: Will change/add more data when Jacob obtains better vocab lists**
+
+
+# Packages
+```{r}
+# packages for data filtering
+library(readr)
+library(dplyr)
+library(stringr)
+library(fuzzyjoin)
+
+# packages for plot 1
+library(ggplot2)
+library(viridis)
+library(forcats)
+
+# packages for plot 2
+library(ggalluvial)
+library(ggthemes)
+```
+
+______________________________________________________________________________
+
+# Filtering
+## filter data by subject using Eric's script for AP subject joining
+### see `subject_filtering_and_joining.Rmd`
+
+```{r}
+jeop_data <- read_tsv(file = "../data/jeopardy_clue_dataset-master/master_season1-35.tsv")
+
+bio_data <- readr::read_csv(file = "../data/ap_biology.csv", 
+                            col_names = FALSE) %>% 
+  dplyr::rename(vocab_term = X1) %>% 
+  dplyr::mutate(subject = "biology") %>% 
+  dplyr::select(subject, dplyr::everything())
+```
+
+```{r}
+ap_subjects <- c("biology", "chemistry", "physics", "history", "liturature")
+
+school_jeop <- jeop_data %>% 
+  dplyr::arrange(category) %>% 
+  dplyr::mutate(category = stringr::str_to_lower(category)) %>% 
+  dplyr::filter(category %in% ap_subjects)
+``` 
+
+```{r}
+# join AP bio data with jeopardy data
+joined_data <- fuzzyjoin::regex_inner_join(x = school_jeop, 
+                                           y = bio_data, 
+                                           by = c("question" = "vocab_term"))
+```
+
+Below is a function to match the "question" from the jeopardy dataframe to the corresponding key term in a subject data frame. The function expects the standard jeopardy dataframe as well as a key terms dataframe for a given subject. There should be a subject column with the subject (e.g., "science") listed for each row next to each vocab term. This column is what will later be used to group the jeopardy questions by subject. I use `regex_inner_join` to perform robust, inexact matching on the jeopardy questions. This approach nearly doubles the number of matches without including irrelevant matches.
+
+```{r}
+join_by_subject <- function(jeop_df, subject_df) {
+  # Make question column lower case
+  jeop_df <- jeop_df %>% 
+    dplyr::mutate(question = stringr::str_to_lower(question))
+  
+  subject_df <- subject_df %>% 
+    dplyr::mutate(vocab_term = stringr::str_to_lower(vocab_term))
+  
+  joined_df <- fuzzyjoin::regex_inner_join(x = jeop_df,
+                                           y = subject_df,
+                                           by = c("question"= "vocab_term"))
+  return(joined_df)
+}
+```
+
+Below is a call to the join function in order to test it.
+```{r}
+join_test <- join_by_subject(school_jeop, bio_data)
+```
+
+______________________________________________________________________________
+
+# Plots 1-3
+## Heat maps
+
+Background info (Jeopardy show structure)
+- round 1: 200 400 600 800 1000 (different for older years)
+- round 2: 400 800 1200 1600 2000 (different for older years)
+- round 3: wagers /final jeopardy (don't use)
+- extra: daily doubles (round 1 and 2; separate plot)
+
+first: exclude daily doubles for each round (people wager more if it is an easier subject)
+
+### Round 1
+```{r}
+# data for round 1
+heat_data_r1 <- join_test %>%
+  dplyr::filter(daily_double %in% "no",
+                round == 1) %>% 
+  dplyr::select(round, value, subject) %>%
+  dplyr::mutate_at(vars(round, value, subject), funs(factor(.))) %>% 
+  dplyr::group_by(round, value, subject) %>%
+  count() %>%
+  ungroup()
+
+heat_data_r1 %>% 
+  slice(1:5)
+```
+
+```{r}
+# heat map for round 1
+ggplot(heat_data_r1,
+aes(x = fct_reorder(subject, n, .fun = sum),
+    y = fct_reorder(value, n, .fun = sum))) +
+geom_tile(aes(fill = n)) +
+scale_fill_viridis() +
+labs(x = "Subject", y = "Value", 
+     fill = "Number of occurences",
+     title = "Number of occurences of subject by value",
+     subtitle = "Round 1") +
+theme(legend.position = "bottom")
+```
+
+### Round 2
+```{r}
+# data for round 2
+heat_data_r2 <- join_test %>%
+  dplyr::filter(daily_double %in% "no",
+                round == 2) %>% 
+  dplyr::select(round, value, subject) %>%
+  dplyr::mutate_at(vars(round, value, subject), funs(factor(.))) %>% 
+  dplyr::group_by(round, value, subject) %>%
+  count() %>%
+  ungroup()
+
+heat_data_r2 %>% 
+  slice(1:5)
+```
+
+```{r}
+# heat map for round 2
+ggplot(heat_data_r2,
+aes(x = fct_reorder(subject, n, .fun = sum),
+    y = fct_reorder(value, n, .fun = sum))) +
+geom_tile(aes(fill = n)) +
+scale_fill_viridis(option = "magma") +
+labs(x = "Subject", y = "Value", 
+     fill = "Number of occurences",
+     title = "Number of occurences of subject by value",
+     subtitle = "Round 2") +
+theme(legend.position = "bottom")
+```
+
+### Daily Doubles
+```{r}
+# data for daily doubles
+heat_data_dd <- join_test %>%
+  dplyr::filter(daily_double %in% "yes") %>% 
+  dplyr::select(daily_double, value, subject) %>%
+  dplyr::mutate_at(vars(daily_double, value, subject), funs(factor(.))) %>% 
+  dplyr::group_by(daily_double, value, subject) %>%
+  count() %>%
+  ungroup()
+
+heat_data_dd %>% 
+  slice(1:5)
+```
+
+```{r}
+# heat map for daily doubles
+ggplot(heat_data_dd,
+aes(x = fct_reorder(subject, n, .fun = sum),
+    y = fct_reorder(value, n, .fun = sum))) +
+geom_tile(aes(fill = n)) +
+scale_fill_viridis(option = "plasma") +
+labs(x = "Subject", y = "Value", 
+     fill = "Number of occurences",
+     title = "Number of occurences of subject by value",
+     subtitle = "Daily Doubles") +
+theme(legend.position = "bottom")
+```
+
+______________________________________________________________________________
+
+
+### EXTRA (POTENTIAL) PLOT IDEAS ###
+
+# Plot 4
+## Alluvial plot
+
+```{r}
+alluv_data <- join_test %>%
+  dplyr::filter(daily_double %in% "no") %>% 
+  dplyr::select(value, subject) %>%
+  dplyr::mutate_at(vars(value, subject), funs(factor(.))) %>% 
+  dplyr::group_by(value, subject) %>%
+  count() %>%
+  ungroup()
+
+alluv_data %>% 
+  slice(1:5)
+```
+
+```{r}
+ggplot(data = alluv_data,
+       aes(axis1 = value, axis2 = subject, y = n)) +
+scale_x_discrete(limits = c("Value", "Subject"),
+                 expand = c(.1, .05)) +
+geom_alluvium(aes(fill = value %in% c("300", "400", "600"))) +
+theme_minimal() + 
+geom_stratum() +
+geom_text(stat = "stratum", label.strata = TRUE) +
+theme(legend.position = "top") + labs(fill = "Flood event: ")
+```
+
+______________________________________________________________________________
+
+# Plot 5
+## Mosaic plot
+
+
+
+
+______________________________________________________________________________
+

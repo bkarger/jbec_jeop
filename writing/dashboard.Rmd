@@ -14,12 +14,16 @@ library(scales)
 library(gridExtra)
 library(plotly)
 library(DT)
+library(readr)
+library(dplyr)
+library(stringr)
+library(fuzzyjoin)
 ```
 
-Column {data-width=600}
+Column {data-height=350}
 -----------------------------------------------------------------------
 
-### Chart A
+### Raw data (Will be replaced with graphs from Caroline)
 
 ```{r}
 season_1 <- read_tsv("../data/jeopardy_clue_dataset-master/season16.tsv") %>% 
@@ -27,10 +31,49 @@ season_1 <- read_tsv("../data/jeopardy_clue_dataset-master/season16.tsv") %>%
 datatable(season_1)
 ```
 
-Column {data-width=600}
+Column {data-height=650}{.tabset}
 -----------------------------------------------------------------------
 
-### Chart B
+### filtered
+
+```{r}
+
+jeop_data <- readr::read_tsv(file = "../data/jeopardy_clue_dataset-master/master_season1-35.tsv")
+bio_data <- readr::read_csv(file = "../data/ap_biology.csv", col_names = FALSE) %>% 
+  dplyr::rename(vocab_term = X1) %>% 
+  dplyr::mutate(subject = "biology") %>% 
+  dplyr::select(subject, dplyr::everything())
+
+ap_subjects <- c("biology", "chemistry", "physics", "history", "liturature")
+
+school_jeop <- jeop_data %>% 
+  dplyr::arrange(category) %>% 
+  dplyr::mutate(category = stringr::str_to_lower(category)) %>% 
+  dplyr::filter(category %in% ap_subjects)
+
+joined_data <- fuzzyjoin::regex_inner_join(x = school_jeop, y = bio_data, by = c("question"= "vocab_term"))
+
+join_by_subject <- function(jeop_df, subject_df) {
+  # Make question column lower case
+  jeop_df <- jeop_df %>% 
+    dplyr::mutate(question = stringr::str_to_lower(question))
+  
+  subject_df <- subject_df %>% 
+    dplyr::mutate(vocab_term = stringr::str_to_lower(vocab_term))
+  
+  joined_df <- fuzzyjoin::regex_inner_join(x = jeop_df, y = subject_df, by = c("question"= "vocab_term"))
+  return(joined_df)
+}
+
+join_test <- join_by_subject(school_jeop, bio_data)
+
+datatable(join_test)
+```
+
+Column {data-height=650}
+-----------------------------------------------------------------------
+
+### Tournament and daily double info
 
 ```{r}
 jep_data <- read_tsv("../data/jeopardy_clue_dataset-master/season16.tsv")
@@ -61,10 +104,3 @@ tournament_graph <- ggplotly(tournament_graph)
 
 subplot(all_rounds, tournament_graph, nrows = 2)
 ```
-
-### Chart C
-
-```{r}
-
-```
-

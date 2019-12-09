@@ -1,0 +1,122 @@
+---
+title: "Dashboard 2"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(tidyr)
+library(scales)
+library(gridExtra)
+library(plotly)
+library(DT)
+library(readr)
+library(dplyr)
+library(stringr)
+library(fuzzyjoin)
+
+
+```
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Graph of values for daily double bets in season 16
+
+```{r}
+jep_data <- read_tsv("../data/jeopardy_clue_dataset-master/season16.tsv")
+
+tournaments <- jep_data %>% 
+  mutate(tournaments = notes == str_match_all(string = notes, pattern = ".*game.*")) %>%
+  filter(tournaments == TRUE)
+
+tournament_graph <- tournaments %>% 
+  select(-c(comments:question, notes)) %>% 
+  filter(daily_double == "yes") %>% 
+  arrange(desc(value, air_date)) %>% 
+  ggplot(aes(value, air_date)) +
+  geom_point(aes(color = round)) +
+  ggtitle("Tournaments") +
+  facet_grid("round")
+all_rounds <- jep_data %>% 
+  select(-c(comments:question, notes)) %>% 
+  filter(daily_double == "yes") %>% 
+  arrange(desc(value, air_date)) %>% 
+  ggplot(aes(value, air_date)) +
+  geom_point(aes(color = round)) + 
+  ggtitle("All Games") +
+  facet_grid("round") 
+
+all_rounds <- ggplotly(all_rounds)
+tournament_graph <- ggplotly(tournament_graph)
+
+subplot(all_rounds, tournament_graph, nrows = 2)
+```
+
+### Daily double graph
+
+```{r}
+daily_doubles <- tournaments %>% 
+  group_by(round, air_date, daily_double) %>% 
+  count(total_rounds = n()) %>% 
+  ungroup() %>% 
+  ggplot(aes(x = round)) +
+  geom_bar(aes(fill = daily_double)) +
+  ggtitle("Daily Doubles in each round of tournaments for 1-35 seasons", subtitle = "") +
+  labs(x = "Jeopardy Rounds 1-3", y = "Number of Rounds") +
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  theme_bw() +
+  scale_fill_viridis_d()
+daily_doubles
+```
+
+Column {.tabset data-width=400}
+-----------------------------------------------------------------------
+
+### DT of Season 16
+
+```{r}
+season_1 <- read_tsv("../data/jeopardy_clue_dataset-master/season16.tsv") %>% 
+  filter(round == "1")
+datatable(season_1)
+```
+
+### DT of join
+```{r}
+jeop_data <- readr::read_tsv(file = "../data/jeopardy_clue_dataset-master/master_season1-35.tsv")
+bio_data <- readr::read_csv(file = "../data/ap_biology.csv", col_names = FALSE) %>% 
+  dplyr::rename(vocab_term = X1) %>% 
+  dplyr::mutate(subject = "biology") %>% 
+  dplyr::select(subject, dplyr::everything())
+
+ap_subjects <- c("biology", "chemistry", "physics", "history", "liturature")
+
+school_jeop <- jeop_data %>% 
+  dplyr::arrange(category) %>% 
+  dplyr::mutate(category = stringr::str_to_lower(category)) %>% 
+  dplyr::filter(category %in% ap_subjects)
+
+joined_data <- fuzzyjoin::regex_inner_join(x = school_jeop, y = bio_data, by = c("question"= "vocab_term"))
+
+join_by_subject <- function(jeop_df, subject_df) {
+  # Make question column lower case
+  jeop_df <- jeop_df %>% 
+    dplyr::mutate(question = stringr::str_to_lower(question))
+  
+  subject_df <- subject_df %>% 
+    dplyr::mutate(vocab_term = stringr::str_to_lower(vocab_term))
+  
+  joined_df <- fuzzyjoin::regex_inner_join(x = jeop_df, y = subject_df, by = c("question"= "vocab_term"))
+  return(joined_df)
+}
+
+join_test <- join_by_subject(school_jeop, bio_data)
+
+datatable(join_test)
+```
+
+
+
+

@@ -18,6 +18,9 @@ library(dplyr)
 library(stringr)
 library(fuzzyjoin)
 
+# package for tables
+library(kableExtra)
+
 # packages for plots
 library(ggplot2)
 library(viridis)
@@ -26,65 +29,54 @@ library(plotly)
 library(ggthemes)
 ```
 
-______________________________________________________________________________
-
 # Filtering
-## filter data by subject using Eric's script for AP subject joining
-### see `subject_filtering_and_joining.Rmd`
-
 ```{r}
-jeop_data <- read_tsv(file = "../data/jeopardy_clue_dataset-master/master_season1-35.tsv")
-
-bio_data <- readr::read_csv(file = "../data/ap_biology.csv", 
-                            col_names = FALSE) %>% 
-  dplyr::rename(vocab_term = X1) %>% 
-  dplyr::mutate(subject = "biology") %>% 
-  dplyr::select(subject, dplyr::everything())
-```
-
-```{r}
-ap_subjects <- c("biology", "chemistry", "physics", "history", "liturature")
-
-school_jeop <- jeop_data %>% 
-  dplyr::arrange(category) %>% 
-  dplyr::mutate(category = stringr::str_to_lower(category)) %>% 
-  dplyr::filter(category %in% ap_subjects)
-``` 
-
-```{r}
-# join AP bio data with jeopardy data
-joined_data <- fuzzyjoin::regex_inner_join(x = school_jeop, 
-                                           y = bio_data, 
-                                           by = c("question" = "vocab_term"))
-```
-
-Below is a function to match the "question" from the jeopardy dataframe to the corresponding key term in a subject data frame. The function expects the standard jeopardy dataframe as well as a key terms dataframe for a given subject. There should be a subject column with the subject (e.g., "science") listed for each row next to each vocab term. This column is what will later be used to group the jeopardy questions by subject. I use `regex_inner_join` to perform robust, inexact matching on the jeopardy questions. This approach nearly doubles the number of matches without including irrelevant matches.
-
-```{r}
-join_by_subject <- function(jeop_df, subject_df) {
-  # Make question column lower case
-  jeop_df <- jeop_df %>% 
-    dplyr::mutate(question = stringr::str_to_lower(question))
+# jeopardy data
+jeop_data <- read_tsv(
+  file = "../data/jeopardy_clue_dataset-master/master_season1-35.tsv") %>%
+  dplyr::mutate(question = stringr::str_to_lower(question)) %>%
+  dplyr::mutate(question = stringr::str_remove_all(question,
+                                                   "[^[:alnum:][:blank:]]"))
   
-  subject_df <- subject_df %>% 
-    dplyr::mutate(vocab_term = stringr::str_to_lower(vocab_term))
-  
-  joined_df <- fuzzyjoin::regex_inner_join(x = jeop_df,
-                                           y = subject_df,
-                                           by = c("question"= "vocab_term"))
-  return(joined_df)
-}
+# subjects and terms data
+sub_term_data <- read_csv("../data/subjects_and_terms.csv") %>%
+  rename(vocab_term = Term,
+      subject = Subject) %>%
+  dplyr::mutate(vocab_term = 
+                  stringr::str_to_lower(vocab_term)) %>%
+  dplyr::mutate(vocab_term = 
+                  stringr::str_remove_all(vocab_term,
+                                          "[^[:alnum:][:blank:]]")) %>%
+  dplyr::distinct() %>% 
+  dplyr::mutate(question = vocab_term) %>% 
+  dplyr::group_by(subject) %>%
+  dplyr::sample_n(size = 155, replace = FALSE) %>% 
+  dplyr::ungroup()
 ```
 
-Below is a call to the join function in order to test it.
+# Join
 ```{r}
-join_test <- join_by_subject(school_jeop, bio_data)
+jeop_school_joined <- dplyr::inner_join(x = jeop_data,
+                               y = sub_term_data,
+                               by = "question")
 ```
 
-_______________________________________________________________________________
+# Summary statistics
+```{r}
+jeop_school_summary <- jeop_school_joined %>% 
+  dplyr::group_by(subject) %>% 
+  dplyr::summarize(mean_value = mean(value),
+                   sum_sub = n()) %>% 
+  dplyr::ungroup()
+
+kableExtra::kable(jeop_school_summary)
+```
+
+
 
 # Plots 1-3
-## Heat maps
+## Interactive heat maps
+_______________________________________________________________________________
 
 Background info (Jeopardy show structure)
 - round 1: 200 400 600 800 1000 (different for older years)
@@ -94,10 +86,12 @@ Background info (Jeopardy show structure)
 
 first: exclude daily doubles for each round (people wager more if it is an easier subject)
 
+_______________________________________________________________________________
+
 ### Round 1
 ```{r}
 # data for round 1
-heat_data_r1 <- join_test %>%
+heat_data_r1 <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "no",
                 round == 1) %>% 
   dplyr::select(round, value, subject) %>%
@@ -109,6 +103,7 @@ heat_data_r1 <- join_test %>%
 heat_data_r1 %>% 
   slice(1:5)
 ```
+
 
 ```{r}
 # interactive version of heat map for round 1
@@ -128,7 +123,7 @@ ggplotly(hmap_1_interact)
 ### Round 2
 ```{r}
 # data for round 2
-heat_data_r2 <- join_test %>%
+heat_data_r2 <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "no",
                 round == 2) %>% 
   dplyr::select(round, value, subject) %>%
@@ -158,7 +153,7 @@ ggplotly(hmap_2_interact)
 ### Daily Doubles
 ```{r}
 # data for daily doubles
-heat_data_dd <- join_test %>%
+heat_data_dd <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "yes") %>% 
   dplyr::select(daily_double, value, subject) %>%
   dplyr::mutate_at(vars(daily_double, value, subject), funs(factor(.))) %>% 
@@ -185,3 +180,7 @@ ggplotly(hmap_dd_interact)
 ```
 
 
+_______________________________________________________________________________
+
+# Plot 4
+## Faceted interactive heat map

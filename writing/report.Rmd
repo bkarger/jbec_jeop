@@ -20,14 +20,18 @@ What is the most difficult school subject according to Jeopardy?
 
 
 ## Introduction: 
-Why did you decide to ask this question?
+We initially sorted the Jeopardy! data set according to the most commonly asked questions in the history of the show. We found that "What is Australia?" was the most commonly occuring question in the complete Jeopardy! data set. The next 32 most commonly occuring questions were also geography related, indicating knowledge of geography is critical to success in Jeopardy!. This prompted us to consider how a jeopardy-based education would differ from a public school education. Here we investigated if school subjects deemed by us to be the most important and the most difficult, are also the most important and difficult according to the history of Jeopardy!.
 
 
 
 ## Methods: 
 How did you investigate the data to try to answer your question? This should not include R code (save that for the tutorial part), but rather should use language like “To determine if … was associated with …, we measured the correlation …”. It’s fine for this project if the Methods are fairly simple (“We investigated the distribution of … using boxplots …”, “We took the mean and interquartile range of …”, “We mapped state-level averages of …”, etc.). Why do you choose to use the Methods you used? Why do you think they’re appropriate and useful for your project?
 
+To evaluate the most difficult and important school subjects according to Jeopardy!, we created a dataframe of school subjects with lists of terms related to those subjects. We chose to divide the jeopardy data set according to science, mathmatics, history, english, geography, and art related questions. We matched vocab terms from our dataframe with questions in the Jeopardy! dataframe in order to filter the large Jeopardy! dataframe into a dataframe limited to Jeopardy! questions that matched matched our vocab terms.
 
+Tp facilitate joining the dataframes, we converted all Jeopardy! questions and school vocab terms into lowercase words with all special characters removed. To account for differences in the number of vocab terms in each subject, before joining the data frames, we randomly sampled 155 vocab terms from each subject. We created a script to match the "question" from the jeopardy dataframe to the corresponding key term in a subject data frame. The script expects the standard jeopardy dataframe as well as a key terms dataframe for a given subject. There should be a subject column with the subject (e.g., "science") listed for each row next to each vocab term. This column is what is later used to group the jeopardy questions by subject. We used `inner_join` from package "dplyr" to perform matching on the jeopardy questions.
+
+With the joined dataframe in place, we calculated the number of occurances of each school subject as well as the average value of clues containing each subject. We defined th most important school subject according to jeopardy as the topic with the most occurances, and the most difficult at the subject with the highest average monetary value.
 
 
 ## Results: 
@@ -51,8 +55,6 @@ Overview of your approach in R: Step us through a condensed version of how you d
 
 ## Interesting packages/techniques: 
 Spend a bit more time on any parts that you found particularly interesting or exciting. Were there packages you used that were helpful that we haven’t talked about in class? Did you find out how to do anything that you think other students could use in the future? Did you end up writing a lot of functions to use? Did you have an interesting way of sharing code and data among your group members?
-
-
 
 
 

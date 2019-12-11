@@ -2,7 +2,9 @@
 title: "plots_caroline_final"
 author: "Caroline Wendt"
 date: "12/9/2019"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -27,6 +29,7 @@ library(viridis)
 library(forcats)
 library(plotly)
 library(ggthemes)
+library(RColorBrewer)
 ```
 
 # Filtering
@@ -37,7 +40,9 @@ jeop_data <- read_tsv(
   dplyr::mutate(question = stringr::str_to_lower(question)) %>%
   dplyr::mutate(question = stringr::str_remove_all(question,
                                                    "[^[:alnum:][:blank:]]"))
-  
+```
+
+```{r}
 # subjects and terms data
 sub_term_data <- read_csv("../data/subjects_and_terms.csv") %>%
   rename(vocab_term = Term,
@@ -56,22 +61,49 @@ sub_term_data <- read_csv("../data/subjects_and_terms.csv") %>%
 
 # Join
 ```{r}
-jeop_school_joined <- dplyr::inner_join(x = jeop_data,
-                               y = sub_term_data,
-                               by = "question")
+jeop_school_joined <- dplyr::inner_join(x = jeop_data, y = sub_term_data,
+                                        by = "question")
+```
+
+# Separate date 
+The value framework was different prior to November 26, 2001. The first round value originally ranged from 100 to 500; however, the first round value was doubled to 200 to 1,000 on November 26, 2001.
+```{r}
+# add column to distinguish whether episode used old or new value framework
+jeop_school_joined <- jeop_school_joined %>% 
+  dplyr::mutate(air_date_type = if_else(air_date < "2006-11-26", 
+                                        "before", "after"))
 ```
 
 # Summary statistics
 ```{r}
-jeop_school_summary <- jeop_school_joined %>% 
+# before November 26, 2001
+jeop_school_summary_before <- jeop_school_joined %>%
+  dplyr::filter(air_date_type %in% "before") %>% 
   dplyr::group_by(subject) %>% 
-  dplyr::summarize(mean_value = mean(value),
-                   sum_sub = n()) %>% 
+  dplyr::summarize(mean_value = round(mean(value), 2),
+                   subject_total = round(n(), 2)) %>% 
   dplyr::ungroup()
-
-kableExtra::kable(jeop_school_summary)
 ```
 
+```{r}
+# table of summary statistics before November 26, 2001
+summary_table_before <- kableExtra::kable(jeop_school_summary_before)
+```
+
+```{r}
+# after November 26, 2001
+jeop_school_summary_after <- jeop_school_joined %>%
+  dplyr::filter(air_date_type %in% "after") %>% 
+  dplyr::group_by(subject) %>% 
+  dplyr::summarize(mean_value = round(mean(value), 2),
+                   subject_total = round(n(), 2)) %>% 
+  dplyr::ungroup()
+```
+
+```{r}
+# table of summary statistics after November 26, 2001
+summary_table_after <- kableExtra::kable(jeop_school_summary_after)
+```
 
 
 # Plots 1-3
@@ -85,7 +117,6 @@ Background info (Jeopardy show structure)
 - extra: daily doubles (round 1 and 2; separate plot)
 
 first: exclude daily doubles for each round (people wager more if it is an easier subject)
-
 _______________________________________________________________________________
 
 ### Round 1
@@ -94,9 +125,10 @@ _______________________________________________________________________________
 heat_data_r1 <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "no",
                 round == 1) %>% 
-  dplyr::select(round, value, subject) %>%
-  dplyr::mutate_at(vars(round, value, subject), funs(factor(.))) %>% 
-  dplyr::group_by(round, value, subject) %>%
+  dplyr::select(round, value, subject, air_date_type) %>%
+  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+                   funs(factor(.))) %>% 
+  dplyr::group_by(round, value, subject, air_date_type) %>%
   count() %>%
   ungroup()
 
@@ -114,7 +146,9 @@ hmap_1_interact <- ggplot(heat_data_r1,
   labs(x = "Subject", y = "Value", 
        fill = "Number of \noccurences",
        title = "Round 1: Number of occurences of subject by value") +
-  theme_light()
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45)) +
+  facet_grid( . ~ air_date_type, scales = "free_y")
   
 ggplotly(hmap_1_interact)
 ```
@@ -126,9 +160,10 @@ ggplotly(hmap_1_interact)
 heat_data_r2 <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "no",
                 round == 2) %>% 
-  dplyr::select(round, value, subject) %>%
-  dplyr::mutate_at(vars(round, value, subject), funs(factor(.))) %>% 
-  dplyr::group_by(round, value, subject) %>%
+  dplyr::select(round, value, subject, air_date_type) %>%
+  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+                   funs(factor(.))) %>% 
+  dplyr::group_by(round, value, subject, air_date_type) %>%
   count() %>%
   ungroup()
 
@@ -145,7 +180,9 @@ hmap_2_interact <- ggplot(heat_data_r2,
   labs(x = "Subject", y = "Value", 
        fill = "Number of \noccurences",
        title = "Round 2: Number of occurences of subject by value") +
-  theme_light()
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45)) +
+  facet_grid( . ~ air_date_type, scales = "free")
   
 ggplotly(hmap_2_interact)
 ```
@@ -167,20 +204,55 @@ heat_data_dd %>%
 
 ```{r}
 # interactive version of heat map for daily doubles
-hmap_dd_interact <- ggplot(heat_data_dd, 
+hmap_dd_interact <- ggplot(heat_data_dd,
+                          aes(x = subject, y = value)) +
+  geom_tile(aes(fill = n)) +
+  scale_fill_viridis(option = "cividis", direction = -1) +
+  labs(x = "Subject", y = "Value",
+       fill = "Number of \noccurences",
+       title = "Daily Doubles: Number of occurences of subject by value") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45))
+
+ggplotly(hmap_dd_interact)
+```
+
+_______________________________________________________________________________
+
+# Plot 4
+## Double faceted interactive heat map
+```{r}
+# data for double faceting
+heat_data_df <- jeop_school_joined %>%
+  dplyr::filter(daily_double %in% "no",
+                round != 3) %>% 
+  dplyr::select(round, value, subject, air_date_type) %>%
+  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+                   funs(factor(.))) %>% 
+  dplyr::group_by(round, value, subject, air_date_type) %>%
+  count() %>%
+  ungroup()
+
+heat_data_df %>% 
+  slice(1:5)
+```
+
+```{r}
+# interactive version of heat map for rounds 1 and 2 faceted by date
+hmap_4_interact <- ggplot(heat_data_df, 
                           aes(x = subject, y = value)) +
   geom_tile(aes(fill = n)) +
   scale_fill_viridis(option = "plasma", direction = -1) +
   labs(x = "Subject", y = "Value", 
        fill = "Number of \noccurences",
-       title = "Daily Doubles: Number of occurences of subject by value") +
-  theme_light()
+       title = "Number of occurences of subject by value") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45),
+        plot.title = element_text(size = 14),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12)) +
+  facet_grid(round ~ air_date_type, scales = "free_y")  
   
-ggplotly(hmap_dd_interact)
+ggplotly(hmap_4_interact)
 ```
 
-
-_______________________________________________________________________________
-
-# Plot 4
-## Faceted interactive heat map

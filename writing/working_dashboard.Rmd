@@ -1,13 +1,16 @@
 ---
-title: "Working Draft"
+title: "According to Jeopardy! Which school subject is the most valuable?"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: rows
     theme: journal
 ---
 
-```{r setup, include=FALSE}
+```{r, include=FALSE}
 library(flexdashboard)
+library(viridis)
+library(forcats)
+library(ggthemes)
+library(RColorBrewer)
 library(tidyverse)
 library(tidyr)
 library(scales)
@@ -18,106 +21,304 @@ library(readr)
 library(dplyr)
 library(stringr)
 library(fuzzyjoin)
-###
-jep_data <- read_tsv("../data/jeopardy_clue_dataset-master/season16.tsv")
-
-tournaments <- jep_data %>% 
-  mutate(tournaments = notes == str_match_all(string = notes, pattern = ".*game.*")) %>%
-  filter(tournaments == TRUE)
-
-tournament_graph <- tournaments %>% 
-  select(-c(comments:question, notes)) %>% 
-  filter(daily_double == "yes") %>% 
-  arrange(desc(value, air_date)) %>% 
-  ggplot(aes(value, air_date)) +
-  geom_point(aes(color = round)) +
-  ggtitle("Tournaments") +
-  facet_grid("round")
-all_rounds <- jep_data %>% 
-  select(-c(comments:question, notes)) %>% 
-  filter(daily_double == "yes") %>% 
-  arrange(desc(value, air_date)) %>% 
-  ggplot(aes(value, air_date)) +
-  geom_point(aes(color = round)) + 
-  ggtitle("All Games") +
-  facet_grid("round") 
-
-all_rounds <- ggplotly(all_rounds)
-tournament_graph <- ggplotly(tournament_graph)
-###
-daily_doubles <- tournaments %>% 
-  group_by(round, air_date, daily_double) %>% 
-  count(total_rounds = n()) %>% 
-  ungroup() %>% 
-  ggplot(aes(x = round)) +
-  geom_bar(aes(fill = daily_double)) +
-  ggtitle("Daily Doubles in each round of tournaments for 1-35 seasons", subtitle = "") +
-  labs(x = "Jeopardy Rounds 1-3", y = "Number of Rounds") +
-  geom_text(stat='count', aes(label=..count..), vjust=-1) +
-  theme_bw() +
-  scale_fill_viridis_d()
-###
-season_1 <- read_tsv("../data/jeopardy_clue_dataset-master/season16.tsv") %>% 
-  filter(round == "1")
-###
-jeop_data <- readr::read_tsv(file = "../data/jeopardy_clue_dataset-master/master_season1-35.tsv")
-bio_data <- readr::read_csv(file = "../data/ap_biology.csv", col_names = FALSE) %>% 
-  dplyr::rename(vocab_term = X1) %>% 
-  dplyr::mutate(subject = "biology") %>% 
-  dplyr::select(subject, dplyr::everything())
-
-ap_subjects <- c("biology", "chemistry", "physics", "history", "liturature")
-
-school_jeop <- jeop_data %>% 
-  dplyr::arrange(category) %>% 
-  dplyr::mutate(category = stringr::str_to_lower(category)) %>% 
-  dplyr::filter(category %in% ap_subjects)
-
-joined_data <- fuzzyjoin::regex_inner_join(x = school_jeop, y = bio_data, by = c("question"= "vocab_term"))
-
-join_by_subject <- function(jeop_df, subject_df) {
-  # Make question column lower case
-  jeop_df <- jeop_df %>% 
-    dplyr::mutate(question = stringr::str_to_lower(question))
-  
-  subject_df <- subject_df %>% 
-    dplyr::mutate(vocab_term = stringr::str_to_lower(vocab_term))
-  
-  joined_df <- fuzzyjoin::regex_inner_join(x = jeop_df, y = subject_df, by = c("question"= "vocab_term"))
-  return(joined_df)
-}
-
-join_test <- join_by_subject(school_jeop, bio_data)
-###
+library(kableExtra)
 ```
 
-Column {data-width=350}
+```{r, include=FALSE}
+# jeopardy data
+jeop_data <- read_tsv(
+  file = "../data/jeopardy_clue_dataset-master/master_season1-35.tsv") %>%
+  dplyr::mutate(question = stringr::str_to_lower(question)) %>%
+  dplyr::mutate(question = stringr::str_remove_all(question,
+                                                   "[^[:alnum:][:blank:]]"))
+```
+
+```{r, include=FALSE}
+# subjects and terms data
+sub_term_data <- read_csv("../data/subjects_and_terms.csv") %>%
+  rename(vocab_term = Term,
+      subject = Subject) %>%
+  dplyr::mutate(vocab_term = 
+                  stringr::str_to_lower(vocab_term)) %>%
+  dplyr::mutate(vocab_term = 
+                  stringr::str_remove_all(vocab_term,
+                                          "[^[:alnum:][:blank:]]")) %>%
+  dplyr::distinct() %>% 
+  dplyr::mutate(question = vocab_term) %>% 
+  dplyr::group_by(subject) %>%
+  dplyr::sample_n(size = 155, replace = FALSE) %>% 
+  dplyr::ungroup()
+```
+
+```{r, include=FALSE}
+jeop_school_joined <- dplyr::inner_join(x = jeop_data, y = sub_term_data,
+                                        by = "question")
+```
+
+
+```{r, include=FALSE}
+# Separate date 
+#The value framework was different prior to November 26, 2001. The first round value originally ranged from #100 to 500; however, the first round value was doubled to 200 to 1,000 on November 26, 2001.
+# add column to distinguish whether episode used old or new value framework
+jeop_school_joined <- jeop_school_joined %>% 
+  dplyr::mutate(air_date_type = if_else(air_date < "2006-11-26", 
+                                        "before", "after"))
+```
+
+```{r, include=FALSE}
+# before November 26, 2001
+jeop_school_summary_before <- jeop_school_joined %>%
+  dplyr::filter(air_date_type %in% "before") %>% 
+  dplyr::group_by(subject) %>% 
+  dplyr::summarize(mean_value = round(mean(value), 2),
+                   subject_total = round(n(), 2)) %>% 
+  dplyr::ungroup()
+```
+
+```{r, include=FALSE}
+# table of summary statistics before November 26, 2001
+summary_table_before <- kableExtra::kable(jeop_school_summary_before)
+```
+
+```{r, include=FALSE}
+# after November 26, 2001
+jeop_school_summary_after <- jeop_school_joined %>%
+  dplyr::filter(air_date_type %in% "after") %>% 
+  dplyr::group_by(subject) %>% 
+  dplyr::summarize(mean_value = round(mean(value), 2),
+                   subject_total = round(n(), 2)) %>% 
+  dplyr::ungroup()
+```
+
+```{r, include=FALSE}
+# table of summary statistics after November 26, 2001
+summary_table_after <- kableExtra::kable(jeop_school_summary_after)
+```
+
+
+```{r, include=FALSE, eval=FALSE}
+# Plots 1-3
+## Interactive heat maps
+
+#Background info (Jeopardy show structure)
+#- round 1: 200 400 600 800 1000 (different for older years)
+#- round 2: 400 800 1200 1600 2000 (different for older years)
+#- round 3: wagers /final jeopardy (don't use)
+#- extra: daily doubles (round 1 and 2; separate plot)
+
+#first: exclude daily doubles for each round (people wager more if it is an easier subject)
+```
+
+
+
+```{r, include=FALSE}
+# data for round 1
+heat_data_r1 <- jeop_school_joined %>%
+  dplyr::filter(daily_double %in% "no",
+                round == 1) %>% 
+  dplyr::select(round, value, subject, air_date_type) %>%
+  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+                   funs(factor(.))) %>% 
+  dplyr::group_by(round, value, subject, air_date_type) %>%
+  count() %>%
+  ungroup()
+
+heat_data_r1 %>% 
+  slice(1:5)
+```
+
+
+```{r, include=FALSE}
+# interactive version of heat map for round 1
+hmap_1_interact <- ggplot(heat_data_r1,
+                          aes(x = subject, y = value)) +
+  geom_tile(aes(fill = n)) +
+  scale_fill_viridis(option = "viridis", direction = -1) +
+  labs(x = "Subject", y = "Value", 
+       fill = "Number of \noccurences",
+       title = "Round 1: Number of occurences of subject by value") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45)) +
+  facet_grid( . ~ air_date_type, scales = "free_y")
+  
+ggplotly(hmap_1_interact)
+```
+
+
+```{r, include=FALSE}
+# data for round 2
+heat_data_r2 <- jeop_school_joined %>%
+  dplyr::filter(daily_double %in% "no",
+                round == 2) %>% 
+  dplyr::select(round, value, subject, air_date_type) %>%
+  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+                   funs(factor(.))) %>% 
+  dplyr::group_by(round, value, subject, air_date_type) %>%
+  count() %>%
+  ungroup()
+
+heat_data_r2 %>% 
+  slice(1:5)
+```
+
+```{r, include=FALSE}
+# interactive version of heat map for round 2
+hmap_2_interact <- ggplot(heat_data_r2, 
+                          aes(x = subject, y = value)) +
+  geom_tile(aes(fill = n)) +
+  scale_fill_viridis(option = "magma", direction = -1) +
+  labs(x = "Subject", y = "Value", 
+       fill = "Number of \noccurences",
+       title = "Round 2: Number of occurences of subject by value") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45)) +
+  facet_grid( . ~ air_date_type, scales = "free")
+  
+ggplotly(hmap_2_interact)
+```
+
+
+```{r, include=FALSE}
+# data for daily doubles
+heat_data_dd <- jeop_school_joined %>%
+  dplyr::filter(daily_double %in% "yes") %>% 
+  dplyr::select(daily_double, value, subject) %>%
+  dplyr::mutate_at(vars(daily_double, value, subject), funs(factor(.))) %>% 
+  dplyr::group_by(daily_double, value, subject) %>%
+  count() %>%
+  ungroup()
+
+heat_data_dd %>% 
+  slice(1:5)
+```
+
+```{r, include=FALSE}
+# interactive version of heat map for daily doubles
+hmap_dd_interact <- ggplot(heat_data_dd,
+                          aes(x = subject, y = value)) +
+  geom_tile(aes(fill = n)) +
+  scale_fill_viridis(option = "cividis", direction = -1) +
+  labs(x = "Subject", y = "Value",
+       fill = "Number of \noccurences",
+       title = "Daily Doubles: Number of occurences of subject by value") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45))
+
+ggplotly(hmap_dd_interact)
+```
+
+```{r, include=FALSE}
+# Plot 4
+## Double faceted interactive heat map
+# data for double faceting
+heat_data_df <- jeop_school_joined %>%
+  dplyr::filter(daily_double %in% "no",
+                round != 3) %>% 
+  dplyr::select(round, value, subject, air_date_type) %>%
+  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+                   funs(factor(.))) %>% 
+  dplyr::group_by(round, value, subject, air_date_type) %>%
+  count() %>%
+  ungroup()
+
+heat_data_df %>% 
+  slice(1:5)
+```
+
+```{r, include=FALSE}
+# interactive version of heat map for rounds 1 and 2 faceted by date
+hmap_4_interact <- ggplot(heat_data_df, 
+                          aes(x = subject, y = value)) +
+  geom_tile(aes(fill = n)) +
+  scale_fill_viridis(option = "plasma", direction = -1) +
+  labs(x = "Subject", y = "Value", 
+       fill = "Number of \noccurences",
+       title = "Number of occurences of subject by value") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45),
+        plot.title = element_text(size = 14),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12)) +
+  facet_grid(round ~ air_date_type, scales = "free_y")  
+  
+ggplotly(hmap_4_interact)
+```
+
+Graphs
+======================================================================
+Column {.tabset data-width=500}
 -----------------------------------------------------------------------
 
-### All Rounds
+### Both Rounds
 
 ```{r}
-subplot(all_rounds, tournament_graph, nrows = 2)
+ggplotly(hmap_4_interact)
 ```
 
-### Daily Doubles 
+### Round 1
 
-```{r, fig.height=8}
-daily_doubles
+```{r}
+hmap_1_interact
 ```
 
-Column {.tabset data-width=650}
+### Round 2
+
+```{r}
+hmap_2_interact
+```
+
+
+Column {.tabset data-width=500}
+-----------------------------------------------------------------------
+### Daily Doubles
+
+```{r}
+ggplotly(hmap_dd_interact)
+```
+
+### 2nd Tab
+
+```{r}
+
+```
+
+Tables {data-orientation=rows}
+=======================================================================
+
+Row {.tabset data-height=1000}
 -----------------------------------------------------------------------
 
-### Season 1
+### Cleaned Data
 
 ```{r}
-datatable(season_1)
+datatable(jeop_school_joined, options = list(
+  pageLength = 25
+))
 ```
 
-### Join Test
+### Term Data
 
 ```{r}
-datatable(join_test)
+datatable(sub_term_data, options = list(
+  pageLength = 25
+))
+```
+
+Summary
+=======================================================================
+
+Row {.tabset data-height=1000}
+-----------------------------------------------------------------------
+
+### Summary
+
+```{r}
+
+```
+
+### Summary 2
+
+```{r}
+
 ```
 

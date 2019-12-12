@@ -32,10 +32,14 @@ We discovered that the structure of the game show changed with regard to round a
 
 ## Results
 
+!["Heat Map Daily Doubles"](/Users/burtonkarger/Documents/jbec_jeop/graphs/hmap_dd.png)
 
-What did you find out? Most of these slides should be figures or tables. Discuss your interpretation of your results as you present them. Ideally, you should be able to show your main results in about 3 slides, with one figure or table per slide.
+!["Heat Map 4"](/Users/burtonkarger/Documents/jbec_jeop/graphs/hmap_4.png)
+!["Heat Map 1"](/Users/burtonkarger/Documents/jbec_jeop/graphs/hmap_1.png)
 
 **include plots and tables here see** `plots_caroline_final.Rmd`
+
+
 
 most important subject
 most difficult subject

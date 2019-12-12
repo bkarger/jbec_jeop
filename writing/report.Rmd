@@ -30,7 +30,7 @@ To evaluate the most difficult and important school subjects according to Jeopar
 
 To facilitate joining the dataframes, we converted all Jeopardy! questions and school vocab terms into words exclusively limited to lowercase letters with all special characters removed. To account for differences in the number of vocab terms in each subject, before joining the data frames, we randomly sampled 155 vocab terms from each subject. We created a script to match the "question" from the Jeopardy! dataframe to the corresponding key term in the subject data frame. The script expects the standard Jeopardy! dataframe obtained from the Jeopardy! archive as well as a key terms dataframe for a given subject. There should be a subject column with the subject (e.g., `science`) listed for each row next to each vocab term. This column is what is later used to group the Jeopardy! questions by subject. We used `inner_join` from the `dplyr` package to perform matching on the Jeopardy! questions.
 
-With the joined dataframe in place, we calculated the number of occurrences of each school subject as well as the average value of clues containing each subject. We defined the most important school subject according to Jeopardy! as the topic with the most occurrences, and the most difficult at the subject with the highest average monetary value.
+With the joined dataframe in place, we calculated the number of occurrences of each school subject as well as the average value of clues containing each subject. We defined the most important school subject according to Jeopardy! as the topic with the most occurrences, and the most difficult as the subject with the highest average monetary value.
 
 ## Results
 

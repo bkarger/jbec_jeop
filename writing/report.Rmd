@@ -36,6 +36,10 @@ With the joined dataframe in place, we calculated the number of occurrences of e
 
 What did you find out? Most of these slides should be figures or tables. Discuss your interpretation of your results as you present them. Ideally, you should be able to show your main results in about 3 slides, with one figure or table per slide.
 
+```{r}
+ggplotly(hmap_2_interact)
+```
+
 ## Conclusions
 
 So what? How do your results compare with what other people have found out about your research question? Based on what you found, are there now other things you want to check out?

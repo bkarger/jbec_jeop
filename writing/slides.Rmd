@@ -1,19 +1,153 @@
 ---
-title: | 
+title: |
   | The most difficult school subject
   | (according to Jeopardy)
-subtitle: "ERHS 535"
 author: "Jacob Fontenot, Burton Karger, Eric Wendt, Caroline Wendt"
 date: "12/13/2019"
-output: 
+output:
   beamer_presentation:
-    theme: "Szeged"
-    colortheme: "wolverine"
+    colortheme: wolverine
+    theme: Szeged
+  ioslides_presentation: default
+subtitle: ERHS 535
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE, warning=FALSE, error = FALSE)
+```
+
+
+```{r}
+# packages for data filtering
+library(readr)
+library(dplyr)
+library(stringr)
+library(fuzzyjoin)
+
+# package for tables
+library(kableExtra)
+
+# packages for plots
+library(ggplot2)
+library(viridis)
+library(forcats)
+library(plotly)
+library(ggthemes)
+library(RColorBrewer)
+```
+
+```{r}
+# jeopardy data
+jeop_data <- read_tsv(
+  file = "../data/jeopardy_clue_dataset-master/master_season1-35.tsv") %>%
+  dplyr::mutate(question = stringr::str_to_lower(question)) %>%
+  dplyr::mutate(question = stringr::str_remove_all(question,
+                                                   "[^[:alnum:][:blank:]]"))
+```
+
+```{r}
+# subjects and terms data
+sub_term_data <- read_csv("../data/subjects_and_terms.csv") %>%
+  rename(vocab_term = Term,
+      subject = Subject) %>%
+  dplyr::mutate(vocab_term = 
+                  stringr::str_to_lower(vocab_term)) %>%
+  dplyr::mutate(vocab_term = 
+                  stringr::str_remove_all(vocab_term,
+                                          "[^[:alnum:][:blank:]]")) %>%
+  dplyr::distinct() %>% 
+  dplyr::mutate(question = vocab_term) %>% 
+  dplyr::group_by(subject) %>%
+  dplyr::sample_n(size = 155, replace = FALSE) %>% 
+  dplyr::ungroup()
+```
+
+```{r}
+jeop_school_joined <- dplyr::inner_join(x = jeop_data, y = sub_term_data,
+                                        by = "question")
+```
+
+The value framework was different prior to November 26, 2001. The first round value originally ranged from 100 to 500; however, the first round value was doubled to 200 to 1,000 on November 26, 2001.
+```{r}
+# add column to distinguish whether episode used old or new value framework
+jeop_school_joined <- jeop_school_joined %>% 
+  dplyr::mutate(air_date_type = if_else(air_date < "2006-11-26", 
+                                        "before", "after"))
+```
+
+```{r}
+# before November 26, 2001
+jeop_school_summary_before <- jeop_school_joined %>%
+  dplyr::filter(air_date_type %in% "before") %>% 
+  dplyr::group_by(subject) %>% 
+  dplyr::summarize(mean_value = round(mean(value), 2),
+                   subject_total = round(n(), 2)) %>% 
+  dplyr::ungroup()
+```
+
+```{r}
+# table of summary statistics before November 26, 2001
+summary_table_before <- kableExtra::kable(jeop_school_summary_before)
+```
+
+```{r}
+# after November 26, 2001
+jeop_school_summary_after <- jeop_school_joined %>%
+  dplyr::filter(air_date_type %in% "after") %>% 
+  dplyr::group_by(subject) %>% 
+  dplyr::summarize(mean_value = round(mean(value), 2),
+                   subject_total = round(n(), 2)) %>% 
+  dplyr::ungroup()
+```
+
+```{r}
+# table of summary statistics after November 26, 2001
+summary_table_after <- kableExtra::kable(jeop_school_summary_after)
+```
+
+_______________________________________________________________________________
+
+Background info (Jeopardy show structure)
+- round 1: 200 400 600 800 1000 (different for older years)
+- round 2: 400 800 1200 1600 2000 (different for older years)
+- round 3: wagers /final jeopardy (don't use)
+- extra: daily doubles (round 1 and 2; separate plot)
+
+first: exclude daily doubles for each round (people wager more if it is an easier subject)
+_______________________________________________________________________________
+
+```{r}
+# data for round 1
+heat_data_r1 <- jeop_school_joined %>%
+  dplyr::filter(daily_double %in% "no",
+                round == 1) %>% 
+  dplyr::select(round, value, subject, air_date_type) %>%
+  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+                   funs(factor(.))) %>% 
+  dplyr::group_by(round, value, subject, air_date_type) %>%
+  count() %>%
+  ungroup()
+
+heat_data_r1 %>% 
+  slice(1:5)
+```
+
+
+```{r}
+# interactive version of heat map for round 1
+hmap_1_interact <- ggplot(heat_data_r1,
+                          aes(x = subject, y = value)) +
+  geom_tile(aes(fill = n)) +
+  scale_fill_viridis(option = "viridis", direction = -1) +
+  labs(x = "Subject", y = "Value", 
+       fill = "Number of \noccurences",
+       title = "Round 1: Number of occurences of subject by value") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45)) +
+  facet_grid( . ~ air_date_type, scales = "free_y")
+  
+ggplotly(hmap_1_interact)
 ```
 
 # Overview
@@ -23,9 +157,9 @@ knitr::opts_chunk$set(echo = FALSE,
 
 ## Introduction
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+- Initial data investigation showed subject bias
+- Prompted us to consider traditional school subjects
+- Goal is to discover most important and difficult subjects (according to Jeopardy!)
 
 ## Methods
 
@@ -35,10 +169,23 @@ summary(cars)
 
 ## Results
 
-```{r pressure}
-plot(pressure)
+```{r}
+ggplotly(hmap_1_interact)
 ```
 
+## Results
+
+```{r}
+ggplotly(hmap_2_interact)
+```
+
+## Results
+
+```{r}
+ggplotly(hmap_dd_interact)
+```
+
+- 
 
 ## Conclusions
 

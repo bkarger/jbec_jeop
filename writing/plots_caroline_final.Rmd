@@ -99,13 +99,18 @@ jeop_school_summary_after <- jeop_school_joined %>%
 
 ```{r}
 kable(jeop_school_summary_after) %>% 
-  add_header_above(header = c(" " = 1, "Before November 26, 2001" = 2))%>% 
+  add_header_above(header = c(" " = 1, "Before November 26, 2006" = 2))%>% 
+  kable_styling(bootstrap_options = c("striped", "hover")) %>% 
+  row_spec(1, bold = TRUE, color = "blue") %>% 
+  row_spec(3, bold = TRUE, color = "red")
+```
+```{r}
+kable(jeop_school_summary_before) %>% 
+  add_header_above(header = c(" " = 1, "Before November 26, 2006" = 2))%>% 
   kable_styling(bootstrap_options = c("striped", "hover")) %>% 
   row_spec(1, bold = TRUE, color = "blue") %>% 
   row_spec(3, bold = TRUE, color = "red")
 
-combined_table <- kable(list(jeop_school_summary_before, jeop_school_summary_after)) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover")) 
 ```
 
 

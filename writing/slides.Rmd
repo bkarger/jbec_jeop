@@ -50,26 +50,28 @@ What are the most important and most difficult school subjects according to Jeop
 - Calculated average value of all "answers" for each school subject (most difficult subject)
 - Graphed results using interactive heat map faceted by round and date
 
-## Results: Heat map for round 1
+## Results: Heat map for round 1 and 2
 
-
-!["Heat Map 1"](../../jbec_jeop/graphs/hmap_1.png)
-
-## Results: Merging round 1 and 2 heat maps
 
 !["Heat Map 3"](../../jbec_jeop/graphs/hmap_4.png)
 
-## Results: Daily Double heat map
+## Results: Merging round 1 and 2 heat maps
 
 !["Heat Map 4"](../../jbec_jeop/graphs/hmap_dd.png)
 
-## Conclusions: before November 20, 2001
+## Results: Summary Statistics before 11/26/2001
 
 !["before"](../../jbec_jeop/graphs/before_november_20_2001.png)
 
-## Conclusions: after November 20, 2001
+## Results: Summary statistics after 11/26/2001
 
 !["after"](../../jbec_jeop/graphs/after_november_20_2001.png)
+
+## Conclusion
+
+- AP test scores: Geo, English, History, Science, Math, Art
+- Round 1: Art, Science, History, English, Math, Geo
+- Round 2: Art, English, History,  Science, Geo, Math
 
 # Tutorial
 

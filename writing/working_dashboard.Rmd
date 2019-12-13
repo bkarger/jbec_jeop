@@ -61,7 +61,7 @@ jeop_school_joined <- dplyr::inner_join(x = jeop_data, y = sub_term_data,
 #The value framework was different prior to November 26, 2001. The first round value originally ranged from #100 to 500; however, the first round value was doubled to 200 to 1,000 on November 26, 2001.
 # add column to distinguish whether episode used old or new value framework
 jeop_school_joined <- jeop_school_joined %>% 
-  dplyr::mutate(air_date_type = if_else(air_date < "2006-11-26", 
+  dplyr::mutate(air_date_type = if_else(air_date < "2001-11-26", 
                                         "before", "after"))
 ```
 
@@ -309,7 +309,7 @@ Row {.tabset data-height=1000}
 
 ```{r}
 kable(jeop_school_summary_before) %>% 
-  add_header_above(header = c(" " = 1, "Before November 26, 2006" = 2))%>% 
+  add_header_above(header = c(" " = 1, "Before November 26, 2001" = 2))%>% 
   kable_styling(bootstrap_options = c("striped", "hover")) %>% 
   row_spec(1, bold = TRUE, color = "blue") %>% 
   row_spec(3, bold = TRUE, color = "red")
@@ -319,7 +319,7 @@ kable(jeop_school_summary_before) %>%
 
 ```{r}
 kable(jeop_school_summary_after) %>% 
-  add_header_above(header = c(" " = 1, "After November 26, 2006" = 2))%>% 
+  add_header_above(header = c(" " = 1, "After November 26, 2001" = 2))%>% 
   kable_styling(bootstrap_options = c("striped", "hover")) %>% 
   row_spec(1, bold = TRUE, color = "blue") %>% 
   row_spec(3, bold = TRUE, color = "red")

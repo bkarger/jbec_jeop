@@ -268,7 +268,7 @@ hmap_2_interact
 ```
 
 
-Column {.tabset data-width=500}
+Column {data-width=500}
 -----------------------------------------------------------------------
 ### Daily Doubles
 
@@ -276,11 +276,6 @@ Column {.tabset data-width=500}
 ggplotly(hmap_dd_interact)
 ```
 
-### 2nd Tab
-
-```{r}
-
-```
 
 Tables {data-orientation=rows}
 =======================================================================

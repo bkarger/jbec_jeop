@@ -76,12 +76,48 @@ What are the most important and most difficult school subjects according to Jeop
 # Tutorial
 
 ## Overview: Approach in R
+- The data for the subjects which, we would use to filter down the Jeopardy!, questions needed to be created
+and cleaned
+- Initial Jeopardy! and subject data cleaning steps were taken to make the data  more uniform (lowercase columns and values) removing special characters and numbers to facilitate our joining.  
+- The Jeopardy! and subject terms data were then joined, using inner_join, by the "question" column to only keep the rows which are in are in Jeopardy! and subjects terms data frames, and inner_join returns all columns. 
 
-## Packages and techniques
+## Overview: Approach in R
+- For the creation of the subject data we had to utilize the sample_n() function from dplyr since we had more words for some subjects than others, and we chose to randomly select 155 words from each subject. 
+- Following our join of the two data frames we had to create one more column to depict the change in value of the question/answers that occurred after November 26, 2001. 
+
+## Packages
+* packages for data filtering
+  + library(readr)
+  + library(dplyr)
+  + library(stringr)
+* package for tables
+  + library(kableExtra)
+* packages for plots
+  + library(ggplot2)
+  + library(viridis)
+  + library(forcats)
+  + library(plotly)
+  + library(ggthemes)
+  + library(RColorBrewer)
+
+## Our Code
+
+![](../writing/Screen Shot 2019-12-13 at 1.58.02 PM.png)
+
+## Our Code
+
+![](../writing/Screen Shot 2019-12-13 at 1.59.46 PM.png)
+
+## Our Code
+
+![](../writing/Screen Shot 2019-12-13 at 2.00.06 PM.png)
 
 ## Lessons learned
 
-
+- .Rmd can be a curse and a blessing
+  + Getting exactly what you think your .pdf should look like knitted isn't always the easist thing. 
+- GitHub is a wonderful tool for collaborative work
+  + Be very sure to inform others when you have pushed large amounts of changes...
 
 ## References
 

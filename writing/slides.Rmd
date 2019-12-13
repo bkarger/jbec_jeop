@@ -79,10 +79,10 @@ What are the most important and most difficult school subjects according to Jeop
 - The data for the subjects which, we would use to filter down the Jeopardy!, questions needed to be created
 and cleaned
 - Initial Jeopardy! and subject data cleaning steps were taken to make the data  more uniform (lowercase columns and values) removing special characters and numbers to facilitate our joining.  
-- The Jeopardy! and subject terms data were then joined, using inner_join, by the "question" column to only keep the rows which are in are in Jeopardy! and subjects terms data frames, and inner_join returns all columns. 
+- The Jeopardy! and subject terms data were then joined, using `inner_join`, by the "question" column to only keep the rows which are in are in Jeopardy! and subjects terms data frames, and `inner_join` returns all columns. 
 
 ## Overview: Approach in R
-- For the creation of the subject data we had to utilize the sample_n() function from dplyr since we had more words for some subjects than others, and we chose to randomly select 155 words from each subject. 
+- For the creation of the subject data we had to utilize the `sample_n()` function from `dplyr` since we had more words for some subjects than others, and we chose to randomly select 155 words from each subject. 
 - Following our join of the two data frames we had to create one more column to depict the change in value of the question/answers that occurred after November 26, 2001. 
 
 ## Packages
@@ -121,3 +121,6 @@ and cleaned
 
 ## References
 
+- Quizlet Inc. (2019). Quizlet. Retrieved from https://quizlet.com/
+- R Programming for Research Retrieved from https://geanders.github.io/RProgrammingForResearch/
+- Stack Exchange Retrieved from https://stackexchange.com/ 

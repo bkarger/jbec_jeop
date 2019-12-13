@@ -50,6 +50,9 @@ In the kable table "After November 26, 2001" we see that History and Art still m
 ## The most important subject is: History!  
 ## While the most difficult subject is: Art!
 
+We also compared our results to AP test score stastistics. We looked at "pass rate" and grouped similar subjects together to create a list containing our school subjects ordered by greatest to least difficulty. The list is as follows: Geography, English, History, Science, Math, and Art. From the summary stastics from before 11/26/2001: Art, Science, History, English, Math, Geography. From after 11/26/2001: Art, English, History, Science, Geography, and Math. The list made from the AP test scores doesn't agree much with the statistics from before 11/26/2001 but does with those from after. English, History, and Science represent the 2nd, 3rd, and 4th most difficult subjects in the AP list and the dataset after 11/26/2001, and math is predicted to be easier in both. Since data from after 11/26/2001 is more current, we place more weight on it's agreement with the AP scores, and conclude that a Jeopardy-based education would not differ greatly from a public school education in terms of difficulty. 
+
+
 # References
 
 Quizlet Inc. (2019). Quizlet. Retrieved from https://quizlet.com/

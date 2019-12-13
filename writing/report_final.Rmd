@@ -35,12 +35,12 @@ This heat map showing each value for school subjects occurences in regular jeopa
 This heat map here depicts number of occurences of daily doubles per school subject selected against value that was bet per subject. We see that History, science, and art have the most occurences and the highest bets go history, science, art, with the maximum being $11200!!!
 !["Heat Map Daily Doubles"](../../jbec_jeop/graphs/hmap_dd.png)  
 \newpage
-![""](../../jbec_jeop/graphs/before_november_20_2001.png)  
+![""](../../jbec_jeop/graphs/Screen Shot 2019-12-13 at 2.54.15 PM.png)  
 Kable talbes showing our school subjects of interest ordered by descending values for the total occurences of the subject (subject_total). They are separated by before or after November 26, 2006 when the values were doubled for Jeopardy!  
 In our before table, highlighted in blue we see that History has the largest amount of occurences, and second is Art followed by Science. However, highlighted in red we see Art has the highest mean_value, meaning when Art was the questions/answer it's was typically valued higher, followed by Science and History.  
 
 \newpage 
-![""](../../jbec_jeop/graphs/after_november_20_2001.png)  
+![""](../../jbec_jeop/graphs/Screen Shot 2019-12-13 at 2.56.49 PM.png)  
 
 In the kable table "After November 26, 2006" we see that History and Art still maintain their 1st place rankings for total and mean_value, respectively. However, Science has overtaken Art for second most occurred, and English has overtaken Science for second highest valued!
 

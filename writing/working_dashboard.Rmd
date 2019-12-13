@@ -304,21 +304,29 @@ datatable(sub_term_data, options = list(
 ))
 ```
 
-Summary
+Summary Statistics 
 =======================================================================
 
 Row {.tabset data-height=1000}
 -----------------------------------------------------------------------
 
-### Summary
+### Before November 26, 2006
 
 ```{r}
-
+kable(jeop_school_summary_before) %>% 
+  add_header_above(header = c(" " = 1, "Before November 26, 2006" = 2))%>% 
+  kable_styling(bootstrap_options = c("striped", "hover")) %>% 
+  row_spec(1, bold = TRUE, color = "blue") %>% 
+  row_spec(3, bold = TRUE, color = "red")
 ```
 
-### Summary 2
+### After November 26, 2006
 
 ```{r}
-
+kable(jeop_school_summary_after) %>% 
+  add_header_above(header = c(" " = 1, "After November 26, 2006" = 2))%>% 
+  kable_styling(bootstrap_options = c("striped", "hover")) %>% 
+  row_spec(1, bold = TRUE, color = "blue") %>% 
+  row_spec(3, bold = TRUE, color = "red")
 ```
 

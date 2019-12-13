@@ -7,11 +7,6 @@ author: "Jacob Fontenot, Burton Karger, Eric Wendt, Caroline Wendt"
 date: "12/13/2019"
 output: pdf_document
 ---
-
-
-**The final report should not exceed 1,500 words. You should aim for no more than three figures and tables.**
-
-
 # Part I
 
 ## Research question 
@@ -36,42 +31,16 @@ This heat map showing each value for school subjects occurences in regular jeopa
 !["Heat Map 4"](../../jbec_jeop/graphs/hmap_4.png)
 
 This heat map here depicts number of occurences of daily doubles per school subject selected against value that was bet per subject. We see that History, science, and art have the most occurences and the highest bets go history, science, art, with the maximum being $11200!!!
-!["Heat Map Daily Doubles"](../../jbec_jeop/graphs/hmap_dd.png)
-![""](../../jbec_jeop/graphs/before_november_20_2001.png)
-
+!["Heat Map Daily Doubles"](../../jbec_jeop/graphs/hmap_dd.png)  
+![""](../../jbec_jeop/graphs/before_november_20_2001.png)  
+  
+ 
 ![""](../../jbec_jeop/graphs/after_november_20_2001.png)
-  
-  
-  
-  
-  
-  
-  
-  
 ## Conclusions
 
 # According to Jeopardy! before and after November 26,2001.  
 ## The most important subject is: History!  
 ## While the most difficult subject is: Art!
-
-
-# Part II: Tutorial - For Slides?
-
-Overview of your approach in R: Step us through a condensed version of how you did your project
-
-
-
-## Interesting packages/techniques
-
-Spend a bit more time on any parts that you found particularly interesting or exciting. Were there packages you used that were helpful that we haven’t talked about in class? Did you find out how to do anything that you think other students could use in the future? Did you end up writing a lot of functions to use? Did you have an interesting way of sharing code and data among your group members?
-
-
-
-# Lessons learned
-
-If you were to do this project again from scratch, what would you do differently? Were there any big wrong turns along the way? Did you find out how to do something late in the project that would have saved you time if you’d started using it earlier?
-
-
 
 # References
 

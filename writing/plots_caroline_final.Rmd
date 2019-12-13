@@ -87,7 +87,8 @@ jeop_school_summary_before <- jeop_school_joined %>%
 
 ```{r}
 # table of summary statistics before November 26, 2001
-summary_table_before <- kableExtra::kable(jeop_school_summary_before)
+summary_table_before <- kableExtra::kable(jeop_school_summary_before) %>% 
+    save_kable("../graphs/summary_before.pdf")
 ```
 
 ```{r}
@@ -102,7 +103,11 @@ jeop_school_summary_after <- jeop_school_joined %>%
 
 ```{r}
 # table of summary statistics after November 26, 2001
-summary_table_after <- kableExtra::kable(jeop_school_summary_after)
+summary_table_after_png <- jeop_school_joined %>% 
+  kable_as_image(filename = "summary_table_after")
+
+summary_table_after <- kableExtra::kable(jeop_school_summary_after)%>% 
+  as_image()
 ```
 
 
@@ -150,7 +155,7 @@ hmap_1_interact <- ggplot(heat_data_r1,
   theme(axis.text.x = element_text(angle = 45)) +
   facet_grid( . ~ air_date_type, scales = "free_y")
   
-ggplotly(hmap_1_interact)
+hmap_1_interact <- ggplotly(hmap_1_interact)
 ```
 
 

@@ -24,26 +24,24 @@ We initially sorted the Jeopardy! data set according to the most commonly asked 
 
 ## Methods
 
-To evaluate the most difficult and important school subjects according to Jeopardy!, we created a dataframe of school subjects with lists of terms related to those subjects. We obtained these vocab terms from a commonly used online learning platform that provides study tools for various school subjects. We chose to divide the Jeopardy! data set according to science, mathematics, history, english, geography, and art related questions. We matched vocab terms from our vocab dataframe with questions in the Jeopardy! dataframe in order to filter the large Jeopardy! dataframe into a dataframe limited to Jeopardy! questions that matched matched our vocab terms.
+To evaluate the most difficult and important school subjects according to Jeopardy!, we created a dataframe of school subjects with lists of terms related to those subjects. We obtained these vocab terms from a commonly used online learning platform that provides study tools for various school subjects. We chose to divide the Jeopardy! data set according to Science, Mathematics, History, English, Geography, and Art related questions. We matched vocab terms from our vocab dataframe with questions in the Jeopardy! dataframe in order to filter the large Jeopardy! dataframe into a dataframe limited to Jeopardy! questions that matched matched our vocab terms.
 
 To facilitate joining the dataframes, we converted all Jeopardy! questions and school vocab terms into words exclusively limited to lowercase letters with all special characters removed. To account for differences in the number of vocab terms in each subject, before joining the data frames, we randomly sampled 155 vocab terms from each subject. We created a script to match the "question" from the Jeopardy! dataframe to the corresponding key term in the subject data frame. The script expects the standard Jeopardy! dataframe obtained from the Jeopardy! archive as well as a key terms dataframe for a given subject. There should be a subject column with the subject (e.g., `science`) listed for each row next to each vocab term. This column is what is later used to group the Jeopardy! questions by subject. We used `inner_join` from the `dplyr` package to perform matching on the Jeopardy! questions.
 
 We discovered that the structure of the game show changed with regard to round and value after November 26, 2001. That is, values in round one and two doubled their previous values after this date. For instance, the first round value originally ranged from 100 to 500; however, the first round value was doubled to 200 dollars to 1,000 dollars after November 26, 2001. Therefore, we separated the data into two categories to delinate which observations adhered to the particular round-value frameworks before and after this date. Further, with the joined dataframe in place, we calculated the number of occurrences of each school subject as well as the average value of clues containing each subject for each of the two date ranges. We defined the most important school subject according to Jeopardy! as the topic with the most occurrences, and the most difficult as the subject with the highest average monetary value. We graphed these results using an interactive heat map facetd by both round (e.g., 1 or 2) and date (e.g., before or after November 26, 2001).
+  
+## Results  
 
-## Results
+This heat map showing each value for school subjects occurences in regular jeopardy questsions. We see clearly that art and history are the most populous categories and having a fairly high value associated with each question. It is important to note here that the data is also filtered by "after" and "before", meaning before or after November 26, 2001 when the values of the questions doubled.
+!["Heat Map 4"](../../jbec_jeop/graphs/hmap_4.png)
 
-!["Heat Map Daily Doubles"](/Users/burtonkarger/Documents/jbec_jeop/graphs/hmap_dd.png)
-
-!["Heat Map 4"](/Users/burtonkarger/Documents/jbec_jeop/graphs/hmap_4.png)
-!["Heat Map 1"](/Users/burtonkarger/Documents/jbec_jeop/graphs/hmap_1.png)
-
-**include plots and tables here see** `plots_caroline_final.Rmd`
-
+This heat map here depicts number of occurences of daily doubles per school subject selected against value that was bet per subject. We see that History, science, and art have the most occurences and the highest bets go history, science, art, with the maximum being $11200!!!
+!["Heat Map Daily Doubles"](../../jbec_jeop/graphs/hmap_dd.png)
 
 
-most important subject
-most difficult subject
-
+## According to Jeopardy! before and after November 26,2001.  
+# The most important subject is........ History!  
+# And the most difficult subject is....... Art!
 
 ## Conclusions
 

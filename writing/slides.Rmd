@@ -8,6 +8,7 @@ output:
   beamer_presentation:
     colortheme: wolverine
     theme: Szeged
+  slidy_presentation: default
   ioslides_presentation: default
 subtitle: ERHS 535
 ---
@@ -40,7 +41,7 @@ What are the most important and most difficult school subjects according to Jeop
 
 ## Methods: Determining subject importance and difficulty using joined dataframe
 
-- Discovered answer value changes after November 26, 2006 and decided to separate data into two categories
+- Discovered answer value changes after November 26, 2001 and decided to separate data into two categories
 - Calculated number of occurances of each school subject (most important subject)
 - Calculated average value of all "answers" for each school subject (most difficult subject)
 - Graphed results using interactive heat map faceted by round and date
@@ -54,19 +55,19 @@ What are the most important and most difficult school subjects according to Jeop
 
 !["Heat Map 4"](../../jbec_jeop/graphs/hmap_dd.png)
 
-## Results: Summary Statistics before 11/26/2006
+## Results: Summary statistics before 11/26/2001
 
 !["before"](../../jbec_jeop/graphs/Screen Shot 2019-12-13 at 2.54.15 PM.png)
 
-## Results: Summary statistics after 11/26/2006
+## Results: Summary statistics after 11/26/2001
 
 !["after"](../../jbec_jeop/graphs/Screen Shot 2019-12-13 at 2.56.49 PM.png)
 
 ## Conclusion
 
 - AP test scores: Geo, English, History, Science, Math, Art
-- Before 11/26/2006: Art, Science, History, English, Math, Geo
-- After 11/26/2006: Art, English, History,  Science, Geo, Math
+- Before 11/26/2001: Art, Science, History, English, Math, Geo
+- After 11/26/2001: Art, English, History,  Science, Geo, Math
 
 # Tutorial
 
@@ -78,7 +79,7 @@ and cleaned
 
 ## Overview: Approach in R
 - For the creation of the subject data we had to utilize the `sample_n()` function from `dplyr` since we had more words for some subjects than others, and we chose to randomly select 155 words from each subject. 
-- Following our join of the two data frames we had to create one more column to depict the change in value of the question/answers that occurred after November 26, 2006. 
+- Following our join of the two data frames we had to create one more column to depict the change in value of the question/answers that occurred after November 26, 2001. 
 
 ## Packages
 * packages for data filtering

@@ -1,11 +1,13 @@
 ---
-title: | 
+title: |
   | The most difficult school subject
   | (according to Jeopardy)
-subtitle: "ERHS 535"
 author: "Jacob Fontenot, Burton Karger, Eric Wendt, Caroline Wendt"
 date: "12/13/2019"
-output: pdf_document
+output:
+  word_document: default
+  pdf_document: default
+subtitle: ERHS 535
 ---
 # Part I
 

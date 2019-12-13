@@ -39,18 +39,12 @@ This heat map here depicts number of occurences of daily doubles per school subj
 !["Heat Map Daily Doubles"](../../jbec_jeop/graphs/hmap_dd.png)
 
 
-## According to Jeopardy! before and after November 26,2001.  
-# The most important subject is........ History!  
-# And the most difficult subject is....... Art!
-
-```{r}
-ggplotly(hmap_2_interact)
-```
 
 ## Conclusions
 
-So what? How do your results compare with what other people have found out about your research question? Based on what you found, are there now other things you want to check out?
-
+# According to Jeopardy! before and after November 26,2001.  
+## The most important subject is: History!  
+## While the most difficult subject is: Art!
 
 
 # Part II: Tutorial - For Slides?

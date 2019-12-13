@@ -30,14 +30,9 @@ What are the most important and most difficult school subjects according to Jeop
 - Prompted us to consider traditional school subjects
 - Decided to compare "Jeopardy-based" education to public school education
 
-## Methods: Overview
+## Methods: Joining Quizlet and Jeopardy data
 
 - Created a dataframe of school subjects and related terms (from Quizlet)
-- Separated Jeopardy dataset into 6 subjects (science, math, history, english, geography, and art) by "joining" it with the Quizlet dataframe
-
-
-## Methods: Joining dataframes
-
 - Converted all Jeopardy data and school subject data to lowercase and removed all special characters
 - Randomly sampled 155 vocab terms from school subject data 
 - Used `inner_join` from the `dplyr` pacakage to match a the "question" to a specific vocab term
@@ -70,8 +65,8 @@ What are the most important and most difficult school subjects according to Jeop
 ## Conclusion
 
 - AP test scores: Geo, English, History, Science, Math, Art
-- Round 1: Art, Science, History, English, Math, Geo
-- Round 2: Art, English, History,  Science, Geo, Math
+- Before 11/26/2001: Art, Science, History, English, Math, Geo
+- After 11/26/2001: Art, English, History,  Science, Geo, Math
 
 # Tutorial
 

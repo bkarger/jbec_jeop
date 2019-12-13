@@ -56,11 +56,11 @@ What are the most important and most difficult school subjects according to Jeop
 
 ## Results: Summary Statistics before 11/26/2006
 
-!["before"](../../jbec_jeop/graphs/before_november_26_2006.png)
+!["before"](../../jbec_jeop/graphs/Screen Shot 2019-12-13 at 2.54.15 PM.png)
 
 ## Results: Summary statistics after 11/26/2006
 
-!["after"](../../jbec_jeop/graphs/after_november_26_2006.png)
+!["after"](../../jbec_jeop/graphs/Screen Shot 2019-12-13 at 2.56.49 PM.png)
 
 ## Conclusion
 

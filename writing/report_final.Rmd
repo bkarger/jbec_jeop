@@ -44,11 +44,6 @@ We discovered that the structure of the game show changed with regard to round a
 most important subject
 most difficult subject
 
-
-```{r}
-ggplotly(hmap_2_interact)
-```
-
 ## Conclusions
 
 So what? How do your results compare with what other people have found out about your research question? Based on what you found, are there now other things you want to check out?

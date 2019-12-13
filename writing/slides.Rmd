@@ -65,8 +65,8 @@ What are the most important and most difficult school subjects according to Jeop
 ## Conclusion
 
 - AP test scores: Geo, English, History, Science, Math, Art
-- Round 1: Art, Science, History, English, Math, Geo
-- Round 2: Art, English, History,  Science, Geo, Math
+- Before 11/26/2001: Art, Science, History, English, Math, Geo
+- After 11/26/2001: Art, English, History,  Science, Geo, Math
 
 # Tutorial
 

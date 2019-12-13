@@ -70,7 +70,7 @@ The value framework was different prior to November 26, 2001. The first round va
 ```{r}
 # add column to distinguish whether episode used old or new value framework
 jeop_school_joined <- jeop_school_joined %>% 
-  dplyr::mutate(air_date_type = if_else(air_date < "2006-11-26", 
+  dplyr::mutate(air_date_type = if_else(air_date < "2001-11-26", 
                                         "before", "after"))
 ```
 
@@ -98,18 +98,19 @@ jeop_school_summary_after <- jeop_school_joined %>%
 ```
 
 ```{r}
-kable(jeop_school_summary_after) %>% 
-  add_header_above(header = c(" " = 1, "After November 26, 2006" = 2))%>% 
+after <- kable(jeop_school_summary_after) %>% 
+  add_header_above(header = c(" " = 1, "Summary After November 26, 2001" = 2)) %>%
   kable_styling(bootstrap_options = c("striped", "hover")) %>% 
-  row_spec(1, bold = TRUE, color = "blue") %>% 
-  row_spec(3, bold = TRUE, color = "red")
+  row_spec(2, bold = TRUE, color = "red") %>%
+  row_spec(1, bold = TRUE, color = "blue")
 ```
+
 ```{r}
-kable(jeop_school_summary_before) %>% 
-  add_header_above(header = c(" " = 1, "Before November 26, 2006" = 2))%>% 
+before <- kable(jeop_school_summary_before) %>% 
+  add_header_above(header = c(" " = 1, "Summary Before November 26, 2006" = 2))%>% 
   kable_styling(bootstrap_options = c("striped", "hover")) %>% 
   row_spec(1, bold = TRUE, color = "blue") %>% 
-  row_spec(3, bold = TRUE, color = "red")
+  row_spec(5, bold = TRUE, color = "red")
 
 ```
 
@@ -134,7 +135,7 @@ heat_data_r1 <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "no",
                 round == 1) %>% 
   dplyr::select(round, value, subject, air_date_type) %>%
-  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+  dplyr::mutate_at(vars(round, subject, air_date_type), 
                    funs(factor(.))) %>% 
   dplyr::group_by(round, value, subject, air_date_type) %>%
   count() %>%
@@ -158,7 +159,7 @@ hmap_1_interact <- ggplot(heat_data_r1,
   theme(axis.text.x = element_text(angle = 45)) +
   facet_grid( . ~ air_date_type, scales = "free_y")
   
-hmap_1_interact <- ggplotly(hmap_1_interact)
+ggplotly(hmap_1_interact)
 ```
 
 
@@ -169,7 +170,7 @@ heat_data_r2 <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "no",
                 round == 2) %>% 
   dplyr::select(round, value, subject, air_date_type) %>%
-  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+  dplyr::mutate_at(vars(round, subject, air_date_type), 
                    funs(factor(.))) %>% 
   dplyr::group_by(round, value, subject, air_date_type) %>%
   count() %>%
@@ -201,7 +202,7 @@ ggplotly(hmap_2_interact)
 heat_data_dd <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "yes") %>% 
   dplyr::select(daily_double, value, subject) %>%
-  dplyr::mutate_at(vars(daily_double, value, subject), funs(factor(.))) %>% 
+  dplyr::mutate_at(vars(daily_double, subject), funs(factor(.))) %>% 
   dplyr::group_by(daily_double, value, subject) %>%
   count() %>%
   ungroup()
@@ -235,7 +236,7 @@ heat_data_df <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "no",
                 round != 3) %>% 
   dplyr::select(round, value, subject, air_date_type) %>%
-  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+  dplyr::mutate_at(vars(round, subject, air_date_type), 
                    funs(factor(.))) %>% 
   dplyr::group_by(round, value, subject, air_date_type) %>%
   count() %>%

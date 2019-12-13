@@ -55,10 +55,7 @@ jeop_school_joined <- dplyr::inner_join(x = jeop_data, y = sub_term_data,
                                         by = "question")
 ```
 
-
 ```{r, include=FALSE}
-# Separate date 
-#The value framework was different prior to November 26, 2001. The first round value originally ranged from #100 to 500; however, the first round value was doubled to 200 to 1,000 on November 26, 2001.
 # add column to distinguish whether episode used old or new value framework
 jeop_school_joined <- jeop_school_joined %>% 
   dplyr::mutate(air_date_type = if_else(air_date < "2001-11-26", 
@@ -72,12 +69,8 @@ jeop_school_summary_before <- jeop_school_joined %>%
   dplyr::group_by(subject) %>% 
   dplyr::summarize(mean_value = round(mean(value), 2),
                    subject_total = round(n(), 2)) %>% 
-  dplyr::ungroup()
-```
-
-```{r, include=FALSE}
-# table of summary statistics before November 26, 2001
-summary_table_before <- kableExtra::kable(jeop_school_summary_before)
+  dplyr::ungroup() %>% 
+  arrange(desc(subject_total))
 ```
 
 ```{r, include=FALSE}
@@ -87,29 +80,26 @@ jeop_school_summary_after <- jeop_school_joined %>%
   dplyr::group_by(subject) %>% 
   dplyr::summarize(mean_value = round(mean(value), 2),
                    subject_total = round(n(), 2)) %>% 
-  dplyr::ungroup()
+  dplyr::ungroup() %>% 
+  arrange(desc(subject_total))
 ```
 
 ```{r, include=FALSE}
-# table of summary statistics after November 26, 2001
-summary_table_after <- kableExtra::kable(jeop_school_summary_after)
+after <- kable(jeop_school_summary_after) %>% 
+  add_header_above(header = c(" " = 1, "Summary After November 26, 2001" = 2)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>% 
+  row_spec(2, bold = TRUE, color = "red") %>%
+  row_spec(1, bold = TRUE, color = "blue")
 ```
 
+```{r, include=FALSE}
+before <- kable(jeop_school_summary_before) %>% 
+  add_header_above(header = c(" " = 1, "Summary Before November 26, 2001" = 2))%>% 
+  kable_styling(bootstrap_options = c("striped", "hover")) %>% 
+  row_spec(1, bold = TRUE, color = "blue") %>% 
+  row_spec(5, bold = TRUE, color = "red")
 
-```{r, include=FALSE, eval=FALSE}
-# Plots 1-3
-## Interactive heat maps
-
-#Background info (Jeopardy show structure)
-#- round 1: 200 400 600 800 1000 (different for older years)
-#- round 2: 400 800 1200 1600 2000 (different for older years)
-#- round 3: wagers /final jeopardy (don't use)
-#- extra: daily doubles (round 1 and 2; separate plot)
-
-#first: exclude daily doubles for each round (people wager more if it is an easier subject)
 ```
-
-
 
 ```{r, include=FALSE}
 # data for round 1
@@ -117,7 +107,7 @@ heat_data_r1 <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "no",
                 round == 1) %>% 
   dplyr::select(round, value, subject, air_date_type) %>%
-  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+  dplyr::mutate_at(vars(round, subject, air_date_type), 
                    funs(factor(.))) %>% 
   dplyr::group_by(round, value, subject, air_date_type) %>%
   count() %>%
@@ -144,14 +134,13 @@ hmap_1_interact <- ggplot(heat_data_r1,
 ggplotly(hmap_1_interact)
 ```
 
-
 ```{r, include=FALSE}
 # data for round 2
 heat_data_r2 <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "no",
                 round == 2) %>% 
   dplyr::select(round, value, subject, air_date_type) %>%
-  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+  dplyr::mutate_at(vars(round, subject, air_date_type), 
                    funs(factor(.))) %>% 
   dplyr::group_by(round, value, subject, air_date_type) %>%
   count() %>%
@@ -183,7 +172,7 @@ ggplotly(hmap_2_interact)
 heat_data_dd <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "yes") %>% 
   dplyr::select(daily_double, value, subject) %>%
-  dplyr::mutate_at(vars(daily_double, value, subject), funs(factor(.))) %>% 
+  dplyr::mutate_at(vars(daily_double, subject), funs(factor(.))) %>% 
   dplyr::group_by(daily_double, value, subject) %>%
   count() %>%
   ungroup()
@@ -208,14 +197,12 @@ ggplotly(hmap_dd_interact)
 ```
 
 ```{r, include=FALSE}
-# Plot 4
-## Double faceted interactive heat map
 # data for double faceting
 heat_data_df <- jeop_school_joined %>%
   dplyr::filter(daily_double %in% "no",
                 round != 3) %>% 
   dplyr::select(round, value, subject, air_date_type) %>%
-  dplyr::mutate_at(vars(round, value, subject, air_date_type), 
+  dplyr::mutate_at(vars(round, subject, air_date_type), 
                    funs(factor(.))) %>% 
   dplyr::group_by(round, value, subject, air_date_type) %>%
   count() %>%
@@ -252,7 +239,7 @@ Column {.tabset data-width=500}
 ### Both Rounds
 
 ```{r}
-ggplotly(hmap_4_interact)
+hmap_4_interact
 ```
 
 ### Round 1
@@ -273,7 +260,7 @@ Column {data-width=500}
 ### Daily Doubles
 
 ```{r}
-ggplotly(hmap_dd_interact)
+hmap_dd_interact
 ```
 
 
@@ -305,23 +292,15 @@ Summary Statistics
 Row {.tabset data-height=1000}
 -----------------------------------------------------------------------
 
-### Before November 26, 2006
+### Before November 26, 2001
 
 ```{r}
-kable(jeop_school_summary_before) %>% 
-  add_header_above(header = c(" " = 1, "Before November 26, 2001" = 2))%>% 
-  kable_styling(bootstrap_options = c("striped", "hover")) %>% 
-  row_spec(1, bold = TRUE, color = "blue") %>% 
-  row_spec(3, bold = TRUE, color = "red")
+before
 ```
 
-### After November 26, 2006
+### After November 26, 2001
 
 ```{r}
-kable(jeop_school_summary_after) %>% 
-  add_header_above(header = c(" " = 1, "After November 26, 2001" = 2))%>% 
-  kable_styling(bootstrap_options = c("striped", "hover")) %>% 
-  row_spec(1, bold = TRUE, color = "blue") %>% 
-  row_spec(3, bold = TRUE, color = "red")
+after
 ```
 

@@ -37,9 +37,17 @@ This heat map showing each value for school subjects occurences in regular jeopa
 
 This heat map here depicts number of occurences of daily doubles per school subject selected against value that was bet per subject. We see that History, science, and art have the most occurences and the highest bets go history, science, art, with the maximum being $11200!!!
 !["Heat Map Daily Doubles"](../../jbec_jeop/graphs/hmap_dd.png)
+![""](../../jbec_jeop/graphs/before_november_20_2001.png)
 
-
-
+![""](../../jbec_jeop/graphs/after_november_20_2001.png)
+  
+  
+  
+  
+  
+  
+  
+  
 ## Conclusions
 
 # According to Jeopardy! before and after November 26,2001.  

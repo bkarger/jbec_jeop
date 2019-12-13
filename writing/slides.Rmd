@@ -63,8 +63,13 @@ What are the most important and most difficult school subjects according to Jeop
 
 !["Heat Map 4"](../../jbec_jeop/graphs/hmap_dd.png)
 
-## Conclusions
+## Conclusions: before November 20, 2001
 
+!["before"](../../jbec_jeop/graphs/before_november_20_2001.png)
+
+## Conclusions: after November 20, 2001
+
+!["after"](../../jbec_jeop/graphs/after_november_20_2001.png)
 
 # Tutorial
 
